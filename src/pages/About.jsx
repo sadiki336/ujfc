@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { 
-  Users, 
-  Heart, 
-  HandHeart, 
-  BookOpen, 
-  Calendar, 
-  Lightbulb, 
-  HeartHandshake, 
+import {
+  Users,
+  Heart,
+  HandHeart,
+  Calendar,
+  Lightbulb,
+  HeartHandshake,
   UsersRound,
   ShieldCheck,
   Globe,
@@ -15,12 +14,13 @@ import {
   AlertCircle,
   CheckCircle,
   Zap,
-  Award
+  Award,
+  ChevronUp,
 } from 'lucide-react';
 import logo from '../assets/ujfc.jpg';
 import sad from '../assets/capture.png';
 import nadia from '../assets/nadia.jpg';
-import angel from '../assets/angel.jpg'; 
+import angel from '../assets/angel.jpg';
 import gapas from '../assets/gapas.jpg';
 import group1 from '../assets/ghad.jpeg';
 import group2 from '../assets/twese.jpeg';
@@ -31,7 +31,56 @@ import rwandaFlag from '../assets/rwanda.png';
 export default function About() {
   const { t } = useLanguage();
 
-  // Mapping the 4 Core Values
+  // ---------- Back to Top State ----------
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ---------- Re‑triggerable Fade‑in Animations ----------
+  const [visibleSections, setVisibleSections] = useState([]);
+  const sectionsRef = useRef([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const index = Number(entry.target.dataset.sectionIndex);
+          setVisibleSections((prev) =>
+            entry.isIntersecting
+              ? [...new Set([...prev, index])]
+              : prev.filter((i) => i !== index)
+          );
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    sectionsRef.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Helper to apply animation classes
+  const sectionClasses = (index) =>
+    `transition-all duration-700 ${
+      visibleSections.includes(index)
+        ? 'opacity-100 translate-y-0'
+        : 'opacity-0 translate-y-6'
+    }`;
+
+  // ---- Data arrays (unchanged) ----
   const coreValues = [
     { icon: Users, title: t.valuesUnity, description: t.valuesUnityDesc },
     { icon: Heart, title: t.valuesLove, description: t.valuesLoveDesc },
@@ -39,51 +88,32 @@ export default function About() {
     { icon: ShieldCheck, title: t.valuesService, description: t.valuesServiceDesc },
   ];
 
-  // Mapping the 3 Family Pillars (Ubumwe, Urumuri, Duhozanye)
   const familyPillars = [
-    { 
-      icon: UsersRound, 
-      title: t.family1Title, 
-      description: t.family1Desc, 
-      color: 'from-blue-500 to-blue-700' 
+    {
+      icon: UsersRound,
+      title: t.family1Title,
+      description: t.family1Desc,
+      color: 'from-blue-500 to-blue-700',
     },
-    { 
-      icon: Lightbulb, 
-      title: t.family2Title, 
-      description: t.family2Desc, 
-      color: 'from-amber-400 to-orange-500' 
+    {
+      icon: Lightbulb,
+      title: t.family2Title,
+      description: t.family2Desc,
+      color: 'from-amber-400 to-orange-500',
     },
-    { 
-      icon: HeartHandshake, 
-      title: t.family3Title, 
-      description: t.family3Desc, 
-      color: 'from-emerald-500 to-teal-600' 
+    {
+      icon: HeartHandshake,
+      title: t.family3Title,
+      description: t.family3Desc,
+      color: 'from-emerald-500 to-teal-600',
     },
   ];
 
-  // Leadership Team Data
   const teamMembers = [
-    {
-      name: 'Twayigize Sadick',
-      role: t.daddy,
-      image: sad,
-    },
-    {
-      name: 'Mushimiyimana Nadia',
-      role: t.mamy,
-      image: nadia,
-    },
-    {
-      name: 'Gapasi(np)',
-      role: `${t.president} (${t.foundersRole})`,
-      image: gapas,
-    },
-    {
-      name: 'mukobwajana angelique',
-      role: `${t.vicePresident} (${t.foundersRole})`,
-      image: angel,
-    },
-  
+    { name: 'Twayigize Sadick', role: t.daddy, image: sad },
+    { name: 'Mushimiyimana Nadia', role: t.mamy, image: nadia },
+    { name: 'Gapasi(np)', role: `${t.president} (${t.foundersRole})`, image: gapas },
+    { name: 'mukobwajana angelique', role: `${t.vicePresident} (${t.foundersRole})`, image: angel },
   ];
 
   const stats = [
@@ -95,9 +125,16 @@ export default function About() {
 
   return (
     <div className="pt-16 animate-fadeIn">
-      {/* --- HERO SECTION --- */}
-      <section className="relative py-20 bg-slate-900 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-40 bg-cover bg-center" style={{backgroundImage: `url(${abana})`}}></div>
+      {/* ========== HERO ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[0] = el)}
+        data-section-index={0}
+        className={`relative py-20 bg-slate-900 text-white overflow-hidden ${sectionClasses(0)}`}
+      >
+        <div
+          className="absolute inset-0 opacity-40 bg-cover bg-center"
+          style={{ backgroundImage: `url(${abana})` }}
+        ></div>
         <div className="relative max-w-7xl mx-auto px-4 text-center">
           <div className="flex justify-center items-center gap-4 mb-6">
             <img src={rdcFlag} alt="RDC Flag" className="w-16 h-auto rounded-lg shadow-lg" />
@@ -111,8 +148,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* --- HISTORY & ARRIVAL SECTION --- */}
-      <section className="py-20 bg-white">
+      {/* ========== HISTORY & ARRIVAL ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[1] = el)}
+        data-section-index={1}
+        className={`py-20 bg-white ${sectionClasses(1)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative">
@@ -123,9 +164,7 @@ export default function About() {
               <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
                 {t.historyDescription}
               </h3>
-              <p className="text-lg text-slate-600 mb-8 leading-relaxed">
-                {t.historyContent}
-              </p>
+              <p className="text-lg text-slate-600 mb-8 leading-relaxed">{t.historyContent}</p>
               <div className="flex items-center space-x-4 p-6 bg-slate-50 rounded-2xl border-l-4 border-red-600">
                 <Calendar className="w-10 h-10 text-red-600" />
                 <div>
@@ -142,8 +181,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* --- REFUGEE CONTEXT & UJFC STORY --- */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-slate-50">
+      {/* ========== REFUGEE CONTEXT & STORY ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[2] = el)}
+        data-section-index={2}
+        className={`py-20 bg-gradient-to-br from-blue-50 to-slate-50 ${sectionClasses(2)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <div className="flex justify-center items-center gap-4 mb-4">
@@ -154,71 +197,58 @@ export default function About() {
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">{t.journeyTitle}</h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">{t.journeySubtitle}</p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <MapPin className="w-8 h-8 text-red-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.rdcBackground}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.rdcBackgroundDesc}
-              </p>
-              <p className="text-slate-600 leading-relaxed">
-                {t.conflictsDesc}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.rdcBackgroundDesc}</p>
+              <p className="text-slate-600 leading-relaxed">{t.conflictsDesc}</p>
             </div>
-
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <Heart className="w-8 h-8 text-green-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.whyRwanda}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.whyRwandaDesc}
-              </p>
-              <p className="text-slate-600 leading-relaxed">
-                {t.gratefulDescription}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.whyRwandaDesc}</p>
+              <p className="text-slate-600 leading-relaxed">{t.gratefulDescription}</p>
             </div>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <Lightbulb className="w-8 h-8 text-yellow-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.birthUJFC}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.birthUJFCDesc}
-              </p>
-              <p className="text-slate-600 leading-relaxed">
-                {t.ujfcBridge}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.birthUJFCDesc}</p>
+              <p className="text-slate-600 leading-relaxed">{t.ujfcBridge}</p>
             </div>
-
             <div className="bg-white p-8 rounded-2xl shadow-lg">
               <div className="flex items-center gap-3 mb-4">
                 <Zap className="w-8 h-8 text-blue-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.missionAction}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.missionActionDesc}
-              </p>
-              <p className="text-slate-600 leading-relaxed">
-                {t.powerBelief}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.missionActionDesc}</p>
+              <p className="text-slate-600 leading-relaxed">{t.powerBelief}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- CORE VALUES --- */}
-      <section className="py-20 bg-slate-50">
+      {/* ========== CORE VALUES ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[3] = el)}
+        data-section-index={3}
+        className={`py-20 bg-slate-50 ${sectionClasses(3)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {coreValues.map((val, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-all text-center">
+              <div
+                key={idx}
+                className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-all text-center"
+              >
                 <div className="inline-flex p-3 rounded-xl bg-red-50 text-red-600 mb-4">
                   <val.icon size={28} />
                 </div>
@@ -229,125 +259,150 @@ export default function About() {
           </div>
         </div>
       </section>
-{/* --- FAMILY PILLARS (Three Structures) --- */}
-<section className="py-20 bg-white">
-  <div className="max-w-7xl mx-auto px-4">
-    <div className="text-center mb-16">
-      <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">Our three families</p>
-      <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900" style={{fontFamily: "'Playfair Display', serif"}}>
-        The Pillars of U.J.F.C
-      </h2>
-      <p className="text-slate-600 max-w-2xl mx-auto">{t.familySubtitle}</p>
-    </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Ubumwe */}
-      <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-blue-600">
-        <div className="p-6 relative">
-          <span className="absolute top-2 right-3 text-[60px] font-black text-blue-600 opacity-[0.07] leading-none select-none">01</span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-blue-50 text-blue-600 mb-4">
-            <Users size={10} /> Family One
-          </span>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <ShieldCheck size={18} className="text-blue-600" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Ubumwe</h3>
-              <p className="text-xs text-slate-400 tracking-wide">Unity · Together as one</p>
-            </div>
+      {/* ========== FAMILY PILLARS ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[4] = el)}
+        data-section-index={4}
+        className={`py-20 bg-white ${sectionClasses(4)}`}
+      >
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
+              Our three families
+            </p>
+            <h2
+              className="text-3xl md:text-4xl font-bold mb-4 text-slate-900"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              The Pillars of U.J.F.C
+            </h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">{t.familySubtitle}</p>
           </div>
-        </div>
-        <div className="h-px bg-slate-100 mx-5" />
-        <div className="p-6">
-          <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family1Desc}</p>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">Slogans</p>
-          <div className="space-y-2.5">
-            <div className="flex gap-2 text-sm italic text-blue-900">
-              <span className="text-blue-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
-              "Bububwacu buturange ibihe byose"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Ubumwe */}
+            <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-blue-600">
+              <div className="p-6 relative">
+                <span className="absolute top-2 right-3 text-[60px] font-black text-blue-600 opacity-[0.07] leading-none select-none">
+                  01
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-blue-50 text-blue-600 mb-4">
+                  <Users size={10} /> Family One
+                </span>
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck size={18} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Ubumwe</h3>
+                    <p className="text-xs text-slate-400 tracking-wide">Unity · Together as one</p>
+                  </div>
+                </div>
+              </div>
+              <div className="h-px bg-slate-100 mx-5" />
+              <div className="p-6">
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family1Desc}</p>
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">
+                  Slogans
+                </p>
+                <div className="space-y-2.5">
+                  <div className="flex gap-2 text-sm italic text-blue-900">
+                    <span className="text-blue-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
+                    "Bububwacu buturange ibihe byose"
+                  </div>
+                  <div className="flex gap-2 text-sm italic text-blue-900">
+                    <span className="text-blue-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
+                    "Love and secret"
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-2 text-sm italic text-blue-900">
-              <span className="text-blue-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
-              "Love and secret"
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Urumuri */}
-      <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-amber-400">
-        <div className="p-6 relative">
-          <span className="absolute top-2 right-3 text-[60px] font-black text-amber-400 opacity-[0.07] leading-none select-none">02</span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-amber-50 text-amber-700 mb-4">
-            <Users size={10} /> Family Two
-          </span>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
-              <Lightbulb size={18} className="text-amber-600" />
+            {/* Urumuri */}
+            <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-amber-400">
+              <div className="p-6 relative">
+                <span className="absolute top-2 right-3 text-[60px] font-black text-amber-400 opacity-[0.07] leading-none select-none">
+                  02
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-amber-50 text-amber-700 mb-4">
+                  <Users size={10} /> Family Two
+                </span>
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                    <Lightbulb size={18} className="text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Urumuri</h3>
+                    <p className="text-xs text-slate-400 tracking-wide">Light · Illuminating the path</p>
+                  </div>
+                </div>
+              </div>
+              <div className="h-px bg-slate-100 mx-5" />
+              <div className="p-6">
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family2Desc}</p>
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">
+                  Slogans
+                </p>
+                <div className="space-y-2.5">
+                  <div className="flex gap-2 text-sm italic text-amber-900">
+                    <span className="text-amber-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
+                    "Turiho, turiho kandi tuzahora"
+                  </div>
+                  <div className="flex gap-2 text-sm italic text-amber-900">
+                    <span className="text-amber-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
+                    "Hard working times commitment equal success"
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Urumuri</h3>
-              <p className="text-xs text-slate-400 tracking-wide">Light · Illuminating the path</p>
-            </div>
-          </div>
-        </div>
-        <div className="h-px bg-slate-100 mx-5" />
-        <div className="p-6">
-          <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family2Desc}</p>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">Slogans</p>
-          <div className="space-y-2.5">
-            <div className="flex gap-2 text-sm italic text-amber-900">
-              <span className="text-amber-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
-              "Turiho, turiho kandi tuzahora"
-            </div>
-            <div className="flex gap-2 text-sm italic text-amber-900">
-              <span className="text-amber-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
-              "Hard working times commitment equal success"
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Duhozanye */}
-      <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-emerald-500">
-        <div className="p-6 relative">
-          <span className="absolute top-2 right-3 text-[60px] font-black text-emerald-500 opacity-[0.07] leading-none select-none">03</span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 mb-4">
-            <Users size={10} /> Family Three
-          </span>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
-              <HeartHandshake size={18} className="text-emerald-600" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Duhozanye</h3>
-              <p className="text-xs text-slate-400 tracking-wide">Comfort one another</p>
+            {/* Duhozanye */}
+            <div className="rounded-2xl border border-slate-100 overflow-hidden bg-white border-t-[3px] border-t-emerald-500">
+              <div className="p-6 relative">
+                <span className="absolute top-2 right-3 text-[60px] font-black text-emerald-500 opacity-[0.07] leading-none select-none">
+                  03
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 mb-4">
+                  <Users size={10} /> Family Three
+                </span>
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                    <HeartHandshake size={18} className="text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Duhozanye</h3>
+                    <p className="text-xs text-slate-400 tracking-wide">Comfort one another</p>
+                  </div>
+                </div>
+              </div>
+              <div className="h-px bg-slate-100 mx-5" />
+              <div className="p-6">
+                <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family3Desc}</p>
+                <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">
+                  Slogans
+                </p>
+                <div className="space-y-2.5">
+                  <div className="flex gap-2 text-sm italic text-emerald-900">
+                    <span className="text-emerald-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
+                    "Mpoza nguhoze — tube ijwi ryabacu tutazi aho barikugwa"
+                  </div>
+                  <div className="flex gap-2 text-sm italic text-emerald-900">
+                    <span className="text-emerald-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
+                    "Always on the top"
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="h-px bg-slate-100 mx-5" />
-        <div className="p-6">
-          <p className="text-sm text-slate-600 leading-relaxed mb-4">{t.family3Desc}</p>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-300 mb-2">Slogans</p>
-          <div className="space-y-2.5">
-            <div className="flex gap-2 text-sm italic text-emerald-900">
-              <span className="text-emerald-600 font-semibold text-xs mt-0.5 min-w-[16px]">1.</span>
-              "Mpoza nguhoze — tube ijwi ryabacu tutazi aho barikugwa"
-            </div>
-            <div className="flex gap-2 text-sm italic text-emerald-900">
-              <span className="text-emerald-600 font-semibold text-xs mt-0.5 min-w-[16px]">2.</span>
-              "Always on the top"
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
-      {/* --- STATS BAR --- */}
-      <section className="py-12 bg-red-600">
+      {/* ========== STATS BAR ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[5] = el)}
+        data-section-index={5}
+        className={`py-12 bg-red-600 ${sectionClasses(5)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((s, i) => (
@@ -360,8 +415,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* --- LEADERSHIP TEAM --- */}
-      <section className="py-20 bg-slate-50">
+      {/* ========== LEADERSHIP TEAM ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[6] = el)}
+        data-section-index={6}
+        className={`py-20 bg-slate-50 ${sectionClasses(6)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">{t.leadershipTeam}</h2>
@@ -371,10 +430,10 @@ export default function About() {
             {teamMembers.map((member, idx) => (
               <div key={idx} className="group">
                 <div className="relative overflow-hidden rounded-2xl mb-4 aspect-square">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
@@ -386,12 +445,18 @@ export default function About() {
         </div>
       </section>
 
-      {/* --- MISSION & VISION SECTION --- */}
-      <section className="py-20 bg-gradient-to-r from-slate-50 to-slate-100">
+      {/* ========== MISSION & VISION ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[7] = el)}
+        data-section-index={7}
+        className={`py-20 bg-gradient-to-r from-slate-50 to-slate-100 ${sectionClasses(7)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Our Mission & Vision</h2>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">Building bridges between communities and empowering the next generation</p>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Building bridges between communities and empowering the next generation
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-red-600">
@@ -399,11 +464,10 @@ export default function About() {
                 <Award className="w-8 h-8 text-red-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.mission}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.missionText}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.missionText}</p>
               <p className="text-slate-600 leading-relaxed">
-                Through our programs and initiatives, we aim to strengthen bonds of brotherhood and sisterhood while making meaningful contributions to society.
+                Through our programs and initiatives, we aim to strengthen bonds of brotherhood and
+                sisterhood while making meaningful contributions to society.
               </p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-blue-600">
@@ -411,22 +475,27 @@ export default function About() {
                 <Lightbulb className="w-8 h-8 text-blue-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.vision}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">
-                {t.visionText}
-              </p>
+              <p className="text-slate-600 leading-relaxed mb-4">{t.visionText}</p>
               <p className="text-slate-600 leading-relaxed">
-                We envision a future where our members thrive professionally, contribute meaningfully to society, and pass down our rich heritage to future generations.
+                We envision a future where our members thrive professionally, contribute
+                meaningfully to society, and pass down our rich heritage to future generations.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- IMPACT & ACHIEVEMENTS SECTION --- */}
-      <section className="py-20 bg-white">
+      {/* ========== CHALLENGES & SOLUTIONS ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[8] = el)}
+        data-section-index={8}
+        className={`py-20 bg-white ${sectionClasses(8)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">{t.challengesSolutions}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
+              {t.challengesSolutions}
+            </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">{t.challengesDesc}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -437,28 +506,22 @@ export default function About() {
               </div>
               <ul className="space-y-4 text-slate-700">
                 <li className="flex items-start gap-3">
-                  <span className="text-red-600 font-bold">•</span>
-                  <span>{t.economicHardship}</span>
+                  <span className="text-red-600 font-bold">•</span> {t.economicHardship}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-red-600 font-bold">•</span>
-                  <span>{t.educationAccess}</span>
+                  <span className="text-red-600 font-bold">•</span> {t.educationAccess}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-red-600 font-bold">•</span>
-                  <span>{t.culturalPreservation}</span>
+                  <span className="text-red-600 font-bold">•</span> {t.culturalPreservation}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-red-600 font-bold">•</span>
-                  <span>{t.mentalHealth}</span>
+                  <span className="text-red-600 font-bold">•</span> {t.mentalHealth}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-red-600 font-bold">•</span>
-                  <span>{t.socialIntegration}</span>
+                  <span className="text-red-600 font-bold">•</span> {t.socialIntegration}
                 </li>
               </ul>
             </div>
-
             <div className="bg-green-50 p-8 rounded-2xl border-l-4 border-green-600">
               <div className="flex items-center gap-3 mb-6">
                 <CheckCircle className="w-8 h-8 text-green-600" />
@@ -466,34 +529,32 @@ export default function About() {
               </div>
               <ul className="space-y-4 text-slate-700">
                 <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>{t.scholarships}</span>
+                  <span className="text-green-600 font-bold">✓</span> {t.scholarships || t.communitySupport}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>{t.leadershipTraining}</span>
+                  <span className="text-green-600 font-bold">✓</span> {t.leadershipTraining}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>{t.culturalEvents}</span>
+                  <span className="text-green-600 font-bold">✓</span> {t.culturalEvents}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>{t.communitySupport}</span>
+                  <span className="text-green-600 font-bold">✓</span> {t.communitySupport}
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-green-600 font-bold">✓</span>
-                  <span>{t.networking}</span>
+                  <span className="text-green-600 font-bold">✓</span> {t.networking}
                 </li>
               </ul>
             </div>
           </div>
         </div>
       </section>
-      
 
-      {/* --- OUR COMMITMENT TO THE COMMUNITY --- */}
-      <section className="py-20 bg-gradient-to-r from-red-600 to-red-700 text-white">
+      {/* ========== OUR COMMITMENT ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[9] = el)}
+        data-section-index={9}
+        className={`py-20 bg-gradient-to-r from-red-600 to-red-700 text-white ${sectionClasses(9)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center">
             <div className="flex justify-center items-center gap-4 mb-6">
@@ -502,9 +563,7 @@ export default function About() {
               <img src={rwandaFlag} alt="Rwanda Flag" className="w-16 h-auto rounded-lg shadow-lg" />
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-8">{t.commitment}</h2>
-            <p className="text-xl max-w-3xl mx-auto leading-relaxed mb-8">
-              {t.commitmentDesc}
-            </p>
+            <p className="text-xl max-w-3xl mx-auto leading-relaxed mb-8">{t.commitmentDesc}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20">
                 <div className="flex justify-center mb-4">
@@ -532,10 +591,12 @@ export default function About() {
         </div>
       </section>
 
-
-
-      {/* --- LOCATION SECTION --- */}
-      <section className="py-20 bg-white">
+      {/* ========== LOCATION ========== */}
+      <section
+        ref={(el) => (sectionsRef.current[10] = el)}
+        data-section-index={10}
+        className={`py-20 bg-white ${sectionClasses(10)}`}
+      >
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-slate-900 rounded-3xl p-8 md:p-16 text-white flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1">
@@ -569,6 +630,17 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      {/* ========== BACK TO TOP BUTTON ========== */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-50 p-3 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all duration-300 ${
+          showBackToTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
+        aria-label="Back to top"
+      >
+        <ChevronUp size={24} />
+      </button>
     </div>
   );
 }
