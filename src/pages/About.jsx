@@ -72,7 +72,6 @@ export default function About() {
     return () => observer.disconnect();
   }, []);
 
-  // Helper to apply animation classes
   const sectionClasses = (index) =>
     `transition-all duration-700 ${
       visibleSections.includes(index)
@@ -80,7 +79,7 @@ export default function About() {
         : 'opacity-0 translate-y-6'
     }`;
 
-  // ---- Data arrays (unchanged) ----
+  // ---- Data arrays ----
   const coreValues = [
     { icon: Users, title: t.valuesUnity, description: t.valuesUnityDesc },
     { icon: Heart, title: t.valuesLove, description: t.valuesLoveDesc },
@@ -269,13 +268,13 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
-              Our three families
+              {t.ourThreeFamilies}
             </p>
             <h2
               className="text-3xl md:text-4xl font-bold mb-4 text-slate-900"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              The Pillars of U.J.F.C
+              {t.familyTitle}
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto">{t.familySubtitle}</p>
           </div>
@@ -287,14 +286,14 @@ export default function About() {
                   01
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-blue-50 text-blue-600 mb-4">
-                  <Users size={10} /> Family One
+                  <Users size={10} /> {t.family1Title}
                 </span>
                 <div className="flex items-center gap-3 mb-1">
                   <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <ShieldCheck size={18} className="text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">Ubumwe</h3>
+                    <h3 className="text-xl font-bold text-slate-900">{t.family1Title}</h3>
                     <p className="text-xs text-slate-400 tracking-wide">Unity · Together as one</p>
                   </div>
                 </div>
@@ -325,14 +324,14 @@ export default function About() {
                   02
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-amber-50 text-amber-700 mb-4">
-                  <Users size={10} /> Family Two
+                  <Users size={10} /> {t.family2Title}
                 </span>
                 <div className="flex items-center gap-3 mb-1">
                   <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
                     <Lightbulb size={18} className="text-amber-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">Urumuri</h3>
+                    <h3 className="text-xl font-bold text-slate-900">{t.family2Title}</h3>
                     <p className="text-xs text-slate-400 tracking-wide">Light · Illuminating the path</p>
                   </div>
                 </div>
@@ -363,14 +362,14 @@ export default function About() {
                   03
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-widest uppercase px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 mb-4">
-                  <Users size={10} /> Family Three
+                  <Users size={10} /> {t.family3Title}
                 </span>
                 <div className="flex items-center gap-3 mb-1">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
                     <HeartHandshake size={18} className="text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-900">Duhozanye</h3>
+                    <h3 className="text-xl font-bold text-slate-900">{t.family3Title}</h3>
                     <p className="text-xs text-slate-400 tracking-wide">Comfort one another</p>
                   </div>
                 </div>
@@ -453,9 +452,11 @@ export default function About() {
       >
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">Our Mission & Vision</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900">
+              {t.missionVisionTitle}
+            </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Building bridges between communities and empowering the next generation
+              {t.missionVisionSubtitle}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -464,22 +465,14 @@ export default function About() {
                 <Award className="w-8 h-8 text-red-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.mission}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">{t.missionText}</p>
-              <p className="text-slate-600 leading-relaxed">
-                Through our programs and initiatives, we aim to strengthen bonds of brotherhood and
-                sisterhood while making meaningful contributions to society.
-              </p>
+              <p className="text-slate-600 leading-relaxed">{t.missionText}</p>
             </div>
             <div className="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-blue-600">
               <div className="flex items-center gap-3 mb-4">
                 <Lightbulb className="w-8 h-8 text-blue-600" />
                 <h3 className="text-2xl font-bold text-slate-900">{t.vision}</h3>
               </div>
-              <p className="text-slate-600 leading-relaxed mb-4">{t.visionText}</p>
-              <p className="text-slate-600 leading-relaxed">
-                We envision a future where our members thrive professionally, contribute
-                meaningfully to society, and pass down our rich heritage to future generations.
-              </p>
+              <p className="text-slate-600 leading-relaxed">{t.visionText}</p>
             </div>
           </div>
         </div>
